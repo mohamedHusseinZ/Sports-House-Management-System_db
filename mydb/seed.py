@@ -1,54 +1,36 @@
-from faker import Faker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime, timedelta
 from models import Athlete, Event, Result
+from datetime import datetime
 
-#  a Faker instance
-fake = Faker()
-
+# Initialize the database engine and sessionmaker
 engine = create_engine('sqlite:///sports_house.db')
 Session = sessionmaker(bind=engine)
-session = Session()
 
-# Sample data
-athletes_data = [
-    {"name": fake.name(), "age": fake.random_int(min=18, max=40), "sports_specialty": "Swimming", "unique_identifier": fake.uuid4()},
-    {"name": fake.name(), "age": fake.random_int(min=18, max=40), "sports_specialty": "Running", "unique_identifier": fake.uuid4()},
-]
+# Seed the database with initial data
+def seed_data():
+    session = Session()
 
-events_data = [
-    {"name": "Swimming Competition", "date": fake.date_between(start_date='-30d', end_date='today'), "time": fake.time(), "location": "Pool"},
-    {"name": "Running Race", "date": fake.date_between(start_date='-30d', end_date='today'), "time": fake.time(), "location": "Track"},
-]
+    # Create athletes
+    athlete1 = Athlete(name="Zaki Hussen", age=25, contact_info="zaki@example.com", sports_specialty="Swimming", unique_identifier="JD123")
+    athlete2 = Athlete(name="Mo Farah", age=30, contact_info="mo@example.com", sports_specialty="Running", unique_identifier="JS456")
 
-results_data = [
-    {"result_value": "1st Place"},
-    {"result_value": "2nd Place"},
-    {"result_value": "3rd Place"},
-]
+    # Create events
+    event1 = Event(name="Swimming Competition", date=datetime.now(), time=datetime.now(), location="Pool")
+    event2 = Event(name="Running Race", date=datetime.now(), time=datetime.now(), location="Track")
 
-#  Athlete objects
-athletes = [Athlete(**data) for data in athletes_data]
+    # Create results
+    result1 = Result(result_value="1st Place", athlete=athlete1, event=event1)
+    result2 = Result(result_value="2nd Place", athlete=athlete2, event=event1)
+    result3 = Result(result_value="3rd Place", athlete=athlete1, event=event2)
 
-#  Event objects
-events = [Event(**data) for data in events_data]
+    # Add the objects to the session
+    session.add_all([athlete1, athlete2, event1, event2, result1, result2, result3])
 
-#  Result objects
-results = [Result(result_value=data["result_value"]) for data in results_data]
+    # Commit and close the session
+    session.commit()
+    session.close()
+    print("Database seeded successfully.")
 
-# Assign athletes and events to results
-results[0].athlete, results[0].event = athletes[0], events[0]
-results[1].athlete, results[1].event = athletes[1], events[0]
-results[2].athlete, results[2].event = athletes[0], events[1]
-
-# Add objects to the session
-session.add_all(athletes + events + results)
-
-
-# Commit and close the session
-session.commit()
-session.close()
-
-
-
+if __name__ == "__main__":
+    seed_data()
