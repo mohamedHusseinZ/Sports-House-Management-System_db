@@ -3,6 +3,10 @@
 # Sports House Database System
 
 This is a database system for managing athletes, events, and results in a sports house.
+Sports Management System
+Developed a comprehensive system to manage core data for sports organizations, including athletes, events, and results. The system improves data accuracy, decision-making, and scalability.
+
+
 
 ## Table of Contents
 
